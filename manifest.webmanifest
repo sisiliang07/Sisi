@@ -1,0 +1,15 @@
+{
+  "name": "Sisi 英语学习记录",
+  "short_name": "Sisi英语",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f6f7ff",
+  "theme_color": "#f6f7ff",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
