@@ -1,0 +1,815 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>英语学习记录</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121b2f;
+      --muted:#8ea0c7;
+      --text:#e9efff;
+      --accent:#6ea8fe;
+      --danger:#ff6b6b;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+      background:linear-gradient(180deg,#070b14,#0b1220 45%,#070b14);
+      color:var(--text);
+    }
+    header{
+      padding:18px 16px 10px;
+      position:sticky; top:0;
+      backdrop-filter: blur(10px);
+      background:rgba(11,18,32,.7);
+      border-bottom:1px solid rgba(255,255,255,.06);
+      z-index:2;
+    }
+    h1{ margin:0 0 6px; font-size:18px; }
+    .sub{ color:var(--muted); font-size:12px; }
+
+    main{ padding:14px 16px 40px; max-width:1040px; margin:0 auto; }
+    .grid{ display:grid; grid-template-columns: 1.05fr .95fr; gap:12px; }
+    @media (max-width:860px){ .grid{ grid-template-columns:1fr; } }
+
+    .card{
+      background:rgba(18,27,47,.85);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .card h2{ margin:0 0 10px; font-size:15px; }
+
+    label{ display:block; font-size:12px; color:var(--muted); margin:10px 0 6px; }
+    input, textarea, select{
+      width:100%;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(7,11,20,.55);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{ min-height:70px; resize:vertical; }
+
+    .row{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:end; }
+    .row3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
+    @media (max-width:520px){ .row,.row3{ grid-template-columns:1fr; } }
+
+    button{
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(110,168,254,.18);
+      color:var(--text);
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:hover{ background:rgba(110,168,254,.26); }
+    .danger{ background:rgba(255,107,107,.14); border-color:rgba(255,107,107,.35); }
+    .danger:hover{ background:rgba(255,107,107,.22); }
+
+    .btns{ display:flex; flex-wrap:wrap; gap:10px; margin-top:12px; }
+    .right{ text-align:right; }
+    .small{ font-size:12px; color:var(--muted); }
+    .hint{ font-size:12px; color:var(--muted); margin-top:10px; min-height:16px; }
+
+    .divider{ height:1px; background:rgba(255,255,255,.08); margin:12px 0; }
+
+    .stats{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width:520px){ .stats{ grid-template-columns:1fr; } }
+    .stat{
+      border-radius:12px;
+      padding:12px;
+      background:rgba(7,11,20,.45);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .stat .k{ font-size:12px; color:var(--muted); }
+    .stat .v{ font-size:18px; margin-top:6px; }
+
+    .pill{
+      display:inline-block;
+      padding:3px 8px;
+      border-radius:999px;
+      font-size:12px;
+      background:rgba(110,168,254,.18);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    table{ width:100%; border-collapse: collapse; font-size:12px; }
+    th, td{ padding:10px 8px; border-bottom:1px solid rgba(255,255,255,.08); vertical-align: top; }
+    th{ text-align:left; color:var(--muted); font-weight:600; }
+    .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>英语学习记录</h1>
+  <div class="sub">每日记录 + 已读书籍 words（数据保存在本机浏览器；建议每周导出一次备份）</div>
+</header>
+
+<main class="grid">
+  <!-- 左：每日记录 -->
+  <section class="card">
+    <h2>每日记录</h2>
+
+    <div class="row">
+      <div>
+        <label>日期</label>
+        <input id="date" type="date" />
+      </div>
+      <div>
+        <label>快速备注（可选）</label>
+        <input id="note" placeholder="例如：状态一般，碎片时间多" />
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>英语</h2>
+    <div class="row3">
+      <div>
+        <label>英语单词（个）</label>
+        <input id="enWords" type="number" min="0" inputmode="numeric" />
+      </div>
+      <div>
+        <label>阅读页数（页）</label>
+        <input id="readPages" type="number" min="0" inputmode="numeric" />
+      </div>
+      <div>
+        <label>阅读时长（分钟）</label>
+        <input id="readMinutes" type="number" min="0" inputmode="numeric" />
+      </div>
+    </div>
+
+    <label>阅读书名</label>
+    <input id="readTitle" placeholder="例如：Pax / Atomic Habits..." />
+
+    <div class="row">
+      <div>
+        <label>听力内容</label>
+        <input id="listenTitle" placeholder="例如：BBC / Podcast..." />
+      </div>
+      <div>
+        <label>听力时长（分钟）</label>
+        <input id="listenMinutes" type="number" min="0" inputmode="numeric" />
+      </div>
+    </div>
+
+    <label>当日学习内容（可选）</label>
+    <textarea id="detail" placeholder="例如：WW3000 L5；BBC Easy English 两集"></textarea>
+
+    <div class="btns">
+      <button id="saveBtn" type="button">保存 / 更新</button>
+      <button id="loadTodayBtn" type="button">载入该日期</button>
+      <button id="clearFormBtn" class="danger" type="button">清空</button>
+    </div>
+
+    <div class="hint" id="msg"></div>
+  </section>
+
+  <!-- 右：统计 + 已读书籍 -->
+  <aside class="card">
+    <div class="row">
+      <div>
+        <h2 style="margin:0;">统计</h2>
+        <div class="small">范围：</div>
+      </div>
+      <div class="right">
+        <select id="scope">
+          <option value="month">本月</option>
+          <option value="year">本年</option>
+          <option value="all">全部</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="divider"></div>
+
+    <h2>读完一本书（记录 words）</h2>
+    <div class="row">
+      <div>
+        <label>书名</label>
+        <input id="bookTitle" placeholder="例如：Pax" />
+      </div>
+      <div>
+        <label>Words（阅读营提供）</label>
+        <input id="bookWords" type="number" min="0" inputmode="numeric" placeholder="例如：56000" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>完成日期</label>
+        <input id="bookDate" type="date" />
+      </div>
+      <div class="right" style="align-self:end;">
+        <button id="addBookBtn" type="button">添加已读</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <h2 style="margin:0;">每日记录历史</h2>
+      <div class="right"><span class="pill" id="countPill">0 条</span></div>
+    </div>
+
+    <div style="overflow:auto; max-height: 220px; margin-top:10px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:88px;">日期</th>
+            <th>概要</th>
+            <th style="min-width:118px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="list"></tbody>
+      </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="row">
+      <h2 style="margin:0;">已读书籍列表</h2>
+      <div class="right"><span class="pill" id="bookCountPill">0 本</span></div>
+    </div>
+
+    <div style="overflow:auto; max-height: 220px; margin-top:10px;">
+      <table>
+        <thead>
+          <tr>
+            <th style="min-width:92px;">完成</th>
+            <th>书名 / words</th>
+            <th style="min-width:118px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="bookList"></tbody>
+      </table>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>备份 / 恢复</h2>
+    <div class="btns">
+      <button id="exportBtn" type="button">导出 JSON</button>
+      <button id="importBtn" type="button">导入 JSON</button>
+    </div>
+    <input id="fileInput" type="file" accept="application/json" style="display:none;" />
+  </aside>
+</main>
+
+<script>
+/***********************
+ * FINAL JS for GitHub Pages
+ * - English only (no Japanese)
+ * - No punch-in; only "days with records"
+ * - Finished books words add-on
+ * - Backup reminder
+ * - Stable localStorage keys + legacy migration
+ ***********************/
+
+// ====== Keys ======
+const DAILY_KEY = "study_log_EN_MAIN";
+const BOOK_KEY  = "study_books_EN_MAIN";
+const BACKUP_META_KEY = "study_backup_meta_EN_v1";
+
+// If you previously used CodePen versions, these help pull data back once:
+const LEGACY_DAILY_KEYS = [
+  "study_log_MAIN",
+  "study_log_v1",
+  "study_log_v2",
+  "study_log_v3",
+  "study_log_unified_v1",
+  "study_log_unified_v2",
+  "study_log_unified_v3",
+  "study_log_v3_unified",
+  "study_log_v3_unified_v3",
+  "study_log_unified_v3_unified",
+].filter((v,i,a)=>a.indexOf(v)===i);
+
+const LEGACY_BOOK_KEYS = [
+  "study_books_MAIN",
+  "study_books_v1",
+  "study_books_v2",
+  "study_books_v3",
+].filter((v,i,a)=>a.indexOf(v)===i);
+
+// ====== Backup reminder settings ======
+const REMIND_EVERY_CHANGES = 10; // 变更次数达到阈值提醒
+const REMIND_IF_DAYS_OVER = 7;   // 距离上次备份超过N天提醒
+
+// ====== helpers ======
+const $ = (id)=>document.getElementById(id);
+
+function todayISO(){
+  const d = new Date();
+  const tz = d.getTimezoneOffset()*60000;
+  return new Date(d - tz).toISOString().slice(0,10);
+}
+
+function toast(msg){
+  const el = $("msg");
+  if(!el) return;
+  el.textContent = msg || "";
+  if(msg) setTimeout(()=>{ if(el.textContent===msg) el.textContent=""; }, 1800);
+}
+
+function sval(id){ return ($(id)?.value || "").trim(); }
+function setVal(id,v){ if($(id)) $(id).value = v ?? ""; }
+function nval(id){
+  const v = $(id)?.value;
+  if(v === "" || v == null) return 0;
+  const n = parseInt(v,10);
+  return Number.isFinite(n) ? Math.max(0,n) : 0;
+}
+function fmtMin(min){
+  min = Number(min||0);
+  if(min<=0) return "0 分";
+  const h = Math.floor(min/60), m = min%60;
+  if(h<=0) return `${m} 分`;
+  if(m===0) return `${h} 小时`;
+  return `${h} 小时 ${m} 分`;
+}
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+// ====== storage ======
+function readJSON(key, fallback){
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return fallback;
+    return JSON.parse(raw);
+  }catch{
+    return fallback;
+  }
+}
+function writeJSON(key, obj){
+  // GitHub Pages normally stable; keep try/catch for safety
+  try{
+    localStorage.setItem(key, JSON.stringify(obj));
+  }catch(e){
+    toast("保存失败：浏览器限制了本地存储。请用 Safari 正常模式打开后再添加到主屏幕。");
+    console.log("localStorage setItem failed:", e);
+    throw e;
+  }
+}
+
+// ====== backup reminder meta ======
+function readBackupMeta(){
+  try { return JSON.parse(localStorage.getItem(BACKUP_META_KEY) || "{}"); }
+  catch { return {}; }
+}
+function writeBackupMeta(meta){
+  try{ localStorage.setItem(BACKUP_META_KEY, JSON.stringify(meta)); }catch{}
+}
+function markBackupDone(){
+  const meta = readBackupMeta();
+  meta.lastBackupAt = Date.now();
+  meta.pendingChanges = 0;
+  meta.lastRemindedAt = Date.now();
+  writeBackupMeta(meta);
+}
+function recordChangeAndMaybeRemind(){
+  const meta = readBackupMeta();
+  meta.pendingChanges = Number(meta.pendingChanges || 0) + 1;
+
+  const lastBackupAt = Number(meta.lastBackupAt || 0);
+  const daysSinceBackup = lastBackupAt ? (Date.now()-lastBackupAt)/(1000*60*60*24) : 999;
+
+  const shouldRemindByChanges = meta.pendingChanges >= REMIND_EVERY_CHANGES;
+  const shouldRemindByDays = daysSinceBackup >= REMIND_IF_DAYS_OVER;
+
+  const lastRemindedAt = Number(meta.lastRemindedAt || 0);
+  const minutesSinceRemind = lastRemindedAt ? (Date.now()-lastRemindedAt)/(1000*60) : 999;
+
+  if ((shouldRemindByChanges || shouldRemindByDays) && minutesSinceRemind >= 30) {
+    toast(`建议备份：点“导出 JSON”（未备份变更 ${meta.pendingChanges} 次）`);
+    meta.lastRemindedAt = Date.now();
+  }
+
+  writeBackupMeta(meta);
+}
+
+// ====== migration ======
+function migrateBestObjectIntoKey(targetKey, legacyKeys){
+  const main = readJSON(targetKey, {});
+  if(main && typeof main==="object" && Object.keys(main).length>0) return;
+
+  let best=null, bestCount=0;
+  for(const k of legacyKeys){
+    const s = readJSON(k, {});
+    const c = (s && typeof s==="object") ? Object.keys(s).length : 0;
+    if(c>bestCount){ best=s; bestCount=c; }
+  }
+  if(best && bestCount>0) writeJSON(targetKey, best);
+}
+function migrateBestArrayIntoKey(targetKey, legacyKeys){
+  const main = readJSON(targetKey, []);
+  if(Array.isArray(main) && main.length>0) return;
+
+  let best=null, bestCount=0;
+  for(const k of legacyKeys){
+    const s = readJSON(k, []);
+    const c = Array.isArray(s) ? s.length : 0;
+    if(c>bestCount){ best=s; bestCount=c; }
+  }
+  if(Array.isArray(best) && bestCount>0) writeJSON(targetKey, best);
+}
+
+// ====== stores ======
+function readDaily(){
+  migrateBestObjectIntoKey(DAILY_KEY, LEGACY_DAILY_KEYS);
+  return readJSON(DAILY_KEY, {});
+}
+function writeDaily(store){
+  writeJSON(DAILY_KEY, store);
+  try{ recordChangeAndMaybeRemind(); }catch{}
+}
+function readBooks(){
+  migrateBestArrayIntoKey(BOOK_KEY, LEGACY_BOOK_KEYS);
+  return readJSON(BOOK_KEY, []);
+}
+function writeBooks(list){
+  writeJSON(BOOK_KEY, list);
+  try{ recordChangeAndMaybeRemind(); }catch{}
+}
+
+// ====== form ======
+function getDailyForm(){
+  return {
+    date: sval("date"),
+    note: sval("note"),
+    enWords: nval("enWords"),
+    readTitle: sval("readTitle"),
+    readPages: nval("readPages"),
+    readMinutes: nval("readMinutes"),
+    listenTitle: sval("listenTitle"),
+    listenMinutes: nval("listenMinutes"),
+    detail: sval("detail"),
+    updatedAt: new Date().toISOString(),
+  };
+}
+function setDailyForm(r){
+  setVal("note", r?.note ?? "");
+  setVal("enWords", r?.enWords ? r.enWords : "");
+  setVal("readTitle", r?.readTitle ?? "");
+  setVal("readPages", r?.readPages ? r.readPages : "");
+  setVal("readMinutes", r?.readMinutes ? r.readMinutes : "");
+  setVal("listenTitle", r?.listenTitle ?? "");
+  setVal("listenMinutes", r?.listenMinutes ? r.listenMinutes : "");
+  setVal("detail", r?.detail ?? "");
+}
+
+let __isClearing=false;
+function clearDailyKeepDate(showToast=true){
+  __isClearing=true;
+  const keep=sval("date");
+
+  ["note","enWords","readTitle","readPages","readMinutes","listenTitle","listenMinutes","detail"]
+    .forEach(id=>{ if($(id)) $(id).value=""; });
+
+  setVal("date", keep);
+  setTimeout(()=>__isClearing=false, 200);
+  if(showToast) toast("已清空");
+}
+
+// ====== scope ======
+function scopeInfo(){
+  const scope = $("scope")?.value || "month";
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,"0");
+  return { scope, prefixMonth:`${y}-${m}-`, prefixYear:`${y}-` };
+}
+function filterDailyByScope(store){
+  const {scope,prefixMonth,prefixYear}=scopeInfo();
+  const out={};
+  for(const [date,rec] of Object.entries(store)){
+    if(scope==="all") out[date]=rec;
+    else if(scope==="month" && date.startsWith(prefixMonth)) out[date]=rec;
+    else if(scope==="year" && date.startsWith(prefixYear)) out[date]=rec;
+  }
+  return out;
+}
+function filterBooksByScope(books){
+  const {scope,prefixMonth,prefixYear}=scopeInfo();
+  if(scope==="all") return books;
+  if(scope==="month") return books.filter(b=>(b.finishedDate||"").startsWith(prefixMonth));
+  return books.filter(b=>(b.finishedDate||"").startsWith(prefixYear));
+}
+
+// ====== CRUD daily ======
+function saveDaily(){
+  const rec = getDailyForm();
+  if(!rec.date){ toast("请选择日期"); return; }
+
+  const store = readDaily();
+  store[rec.date]=rec;
+
+  try{ writeDaily(store); }catch{ return; }
+  renderAll();
+  toast("已保存");
+}
+function loadDailyByDate(date){
+  if(!date) return;
+  const store = readDaily();
+  const rec = store[date];
+  if(rec){
+    setDailyForm(rec);
+    toast("已载入该日期");
+  }else{
+    toast("该日期暂无记录");
+  }
+}
+function deleteDaily(date){
+  const store = readDaily();
+  if(!store[date]) return;
+  delete store[date];
+
+  try{ writeDaily(store); }catch{ return; }
+
+  if(sval("date")===date) clearDailyKeepDate(false);
+  renderAll();
+  toast("已删除");
+}
+function editDaily(date){
+  setVal("date", date);
+  const store = readDaily();
+  if(store[date]) setDailyForm(store[date]);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+// ====== books ======
+function addFinishedBook(){
+  const title = sval("bookTitle");
+  const words = nval("bookWords");
+  const finished = sval("bookDate") || todayISO();
+  if(!title || words<=0){ toast("请填写书名和 words"); return; }
+
+  const books = readBooks();
+  const id = `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  books.push({id, title, words, finishedDate: finished});
+
+  try{ writeBooks(books); }catch{ return; }
+
+  setVal("bookTitle","");
+  setVal("bookWords","");
+  setVal("bookDate", finished);
+
+  renderAll();
+  toast("已添加已读");
+}
+function deleteBook(id){
+  const books = readBooks().filter(b=>b.id!==id);
+  try{ writeBooks(books); }catch{ return; }
+  renderAll();
+  toast("已删除");
+}
+
+// ====== render ======
+function summarizeDaily(r){
+  const parts=[];
+  if(r.enWords) parts.push(`英词 ${r.enWords}`);
+  if(r.readPages || r.readMinutes) parts.push(`阅读 ${r.readPages}页/${r.readMinutes}分`);
+  if(r.listenMinutes) parts.push(`听力 ${r.listenMinutes}分`);
+  return parts.join(" · ") || (r.note ? `备注：${r.note}` : "（无数据）");
+}
+
+function renderStats(dailyFiltered, booksFiltered){
+  const days = Object.keys(dailyFiltered).length;
+
+  let enWords=0, readPages=0, readMin=0, listenMin=0;
+  for(const r of Object.values(dailyFiltered)){
+    enWords += Number(r.enWords||0);
+    readPages += Number(r.readPages||0);
+    readMin += Number(r.readMinutes||0);
+    listenMin += Number(r.listenMinutes||0);
+  }
+  const totalMin = readMin + listenMin;
+
+  const booksCount = booksFiltered.length;
+  const booksWords = booksFiltered.reduce((s,b)=>s+Number(b.words||0),0);
+
+  const box=$("stats");
+  if(!box) return;
+
+  box.innerHTML = `
+    <div class="stat">
+      <div class="k">每日记录累计（所选范围）</div>
+      <div class="v" style="font-size:14px; line-height:1.65;">
+        英语单词：<b>${enWords}</b><br/>
+        阅读：<b>${readPages}</b> 页 · <b>${fmtMin(readMin)}</b><br/>
+        听力：<b>${fmtMin(listenMin)}</b><br/>
+        英语总时长：<b>${fmtMin(totalMin)}</b>
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="k">天数（所选范围）</div>
+      <div class="v" style="font-size:14px; line-height:1.65;">
+        有记录：<b>${days}</b> 天
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="k">已读书籍累计（按完成日期）</div>
+      <div class="v" style="font-size:14px; line-height:1.65;">
+        本数：<b>${booksCount}</b><br/>
+        Words：<b>${booksWords.toLocaleString()}</b>
+      </div>
+    </div>
+  `;
+}
+
+function renderDailyList(dailyFiltered){
+  const tbody=$("list");
+  if(!tbody) return;
+
+  tbody.innerHTML="";
+  const dates = Object.keys(dailyFiltered).sort((a,b)=>b.localeCompare(a));
+  if($("countPill")) $("countPill").textContent = `${dates.length} 条`;
+
+  if(!dates.length){
+    tbody.innerHTML = `<tr><td colspan="3" style="color:#8ea0c7;">还没有记录。</td></tr>`;
+    return;
+  }
+
+  for(const d of dates){
+    const r = dailyFiltered[d];
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${d}</strong></td>
+      <td>
+        ${escapeHtml(summarizeDaily(r))}<br/>
+        ${r.readTitle ? `<span style="color:#8ea0c7;">📘 ${escapeHtml(r.readTitle)}</span><br/>` : ""}
+        ${r.listenTitle ? `<span style="color:#8ea0c7;">🎧 ${escapeHtml(r.listenTitle)}</span>` : ""}
+      </td>
+      <td>
+        <div class="actions">
+          <button data-edit="${d}" type="button">编辑</button>
+          <button data-del="${d}" class="danger" type="button">删除</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  tbody.onclick = (e)=>{
+    const t = e.target;
+    if(!(t instanceof HTMLElement)) return;
+    const ed=t.getAttribute("data-edit");
+    const del=t.getAttribute("data-del");
+    if(ed) editDaily(ed);
+    if(del) deleteDaily(del);
+  };
+}
+
+function renderBookList(booksFiltered){
+  const tbody=$("bookList");
+  if(!tbody) return;
+
+  tbody.innerHTML="";
+  const sorted=[...booksFiltered].sort((a,b)=>(b.finishedDate||"").localeCompare(a.finishedDate||""));
+  if($("bookCountPill")) $("bookCountPill").textContent = `${sorted.length} 本`;
+
+  if(!sorted.length){
+    tbody.innerHTML = `<tr><td colspan="3" style="color:#8ea0c7;">还没有添加已读书籍。</td></tr>`;
+    return;
+  }
+
+  for(const b of sorted){
+    const tr=document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${escapeHtml(b.finishedDate||"")}</strong></td>
+      <td>
+        ${escapeHtml(b.title)}<br/>
+        <span style="color:#8ea0c7;">${Number(b.words||0).toLocaleString()} words</span>
+      </td>
+      <td>
+        <button data-bdel="${b.id}" class="danger" type="button">删除</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  tbody.onclick = (e)=>{
+    const t=e.target;
+    if(!(t instanceof HTMLElement)) return;
+    const id=t.getAttribute("data-bdel");
+    if(id) deleteBook(id);
+  };
+}
+
+function renderAll(){
+  const daily = readDaily();
+  const books = readBooks();
+  const dailyFiltered = filterDailyByScope(daily);
+  const booksFiltered = filterBooksByScope(books);
+
+  renderStats(dailyFiltered, booksFiltered);
+  renderDailyList(dailyFiltered);
+  renderBookList(booksFiltered);
+}
+
+// ====== backup ======
+function exportAll(){
+  const payload = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    daily: readDaily(),
+    books: readBooks(),
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `study_english_backup_${todayISO()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("已导出");
+  markBackupDone();
+}
+
+function importAll(file){
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      if(!data || typeof data!=="object"){ toast("导入失败：文件内容不对"); return; }
+
+      if(data.daily && typeof data.daily==="object"){
+        const cur = readDaily();
+        const merged = {...cur, ...data.daily};
+        try{ writeDaily(merged); }catch{ return; }
+      }
+      if(Array.isArray(data.books)){
+        const curB = readBooks();
+        const map = new Map(curB.map(x=>[x.id, x]));
+        for(const b of data.books){
+          if(b && b.id) map.set(b.id, b);
+        }
+        try{ writeBooks([...map.values()]); }catch{ return; }
+      }
+
+      renderAll();
+      toast("已导入");
+      markBackupDone();
+    }catch(e){
+      console.log(e);
+      toast("导入失败：文件格式不对");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ====== init ======
+function init(){
+  setVal("date", sval("date") || todayISO());
+  setVal("bookDate", sval("bookDate") || todayISO());
+
+  $("saveBtn")?.addEventListener("click", saveDaily);
+  $("loadTodayBtn")?.addEventListener("click", ()=>{ const d=sval("date"); if(d) loadDailyByDate(d); });
+  $("clearFormBtn")?.addEventListener("click", ()=>clearDailyKeepDate(true));
+
+  $("date")?.addEventListener("change", ()=>{
+    if(__isClearing) return;
+    const d=sval("date");
+    if(d) loadDailyByDate(d); // 无记录则提示，不清空
+  });
+
+  $("scope")?.addEventListener("change", renderAll);
+  $("addBookBtn")?.addEventListener("click", addFinishedBook);
+
+  $("exportBtn")?.addEventListener("click", exportAll);
+  $("importBtn")?.addEventListener("click", ()=>$("fileInput")?.click());
+  $("fileInput")?.addEventListener("change", (e)=>{
+    const f=e.target.files?.[0];
+    if(f) importAll(f);
+    e.target.value="";
+  });
+
+  renderAll();
+
+  // If today has record, load into form (quietly)
+  const d=sval("date");
+  const store=readDaily();
+  if(store[d]) setDailyForm(store[d]);
+}
+init();
+</script>
+</body>
+</html>
