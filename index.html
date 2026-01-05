@@ -201,10 +201,13 @@
     .kpiR{ color:#111827; font-weight:650; font-size:14px; text-align:right; white-space:nowrap; }
     .kpiRBig{ font-size:18px; }
 
-    th:last-child, td:last-child{ width:98px; min-width:98px; }
-    td:last-child{ padding-left:10px; padding-right:10px; }
+    /* History table: make Summary wider by shrinking Action column */
+    th:last-child, td:last-child{ width:92px; min-width:92px; }
+    th:last-child{ text-align:right; padding-right:22px; }
+    td:last-child{ padding-left:8px; padding-right:8px; }
     td:last-child .actions{ display:flex; flex-direction:column; gap:10px; align-items:center; justify-content:center; }
-    td:last-child .actions .mini{ width:78px; min-width:78px; padding:10px 0; line-height:1.1; }
+    /* Smaller action buttons so Summary column has more room */
+    td:last-child .actions .mini{ width:66px; min-width:66px; padding:8px 0; line-height:1.1; }
 
     table{
       width:100%;
@@ -230,13 +233,17 @@
     }
     .actions{ display:flex; gap:10px; flex-direction:column; align-items:center; justify-content:center; }
     td:last-child{ vertical-align:middle; text-align:center; }
-    td:last-child .actions .mini{ min-width:72px; }
+    td:last-child .actions .mini{ min-width:66px; }
     .mini{
       padding:7px 10px;
       border-radius:12px;
       font-size:13px;
       box-shadow:none;
     }
+
+    /* Summary: one category per line */
+    .summaryLines{ display:flex; flex-direction:column; gap:10px; }
+    .sumLine{ line-height:1.15; }
 
     .toast{
       position:fixed;
@@ -553,15 +560,19 @@
       };
     }
 
-    function summary(r){
-      const parts = [];
-      if(r.enWords) parts.push(`单词${r.enWords}`);
-      if(r.readPages) parts.push(`阅读${r.readPages}页`);
-      if(r.readMin) parts.push(`阅读${r.readMin}分`);
-      if(r.listenMin) parts.push(`精听${r.listenMin}分`);
-      if(r.listenWideMin) parts.push(`泛听${r.listenWideMin}分`);
-      if(!parts.length) parts.push("（空）");
-      return parts.join(" · ");
+    // History summary: one line per category (read / deep / broad)
+    function summaryHTML(r){
+      const lines = [];
+      if(r.enWords) lines.push(`单词${r.enWords}`);
+      if(r.readPages || r.readMin){
+        if(r.readPages && r.readMin) lines.push(`阅读${r.readPages}页 · ${r.readMin}分`);
+        else if(r.readPages) lines.push(`阅读${r.readPages}页`);
+        else lines.push(`阅读${r.readMin}分`);
+      }
+      if(r.listenMin) lines.push(`精听${r.listenMin}分`);
+      if(r.listenWideMin) lines.push(`泛听${r.listenWideMin}分`);
+      if(!lines.length) lines.push("（空）");
+      return lines.map(s => `<div class="sumLine">${escapeHtml(s)}</div>`).join("");
     }
 
     /**********************
@@ -585,10 +596,10 @@
           const r = daily[k];
           const tr = document.createElement("tr");
           const safeDate = k;
-          const safeSum = summary(r);
+          const safeSumHTML = summaryHTML(r);
           tr.innerHTML = `
             <td>${safeDate}</td>
-            <td>${safeSum}${r.note ? `<div style="color:var(--muted);margin-top:6px;">📝 ${escapeHtml(r.note)}</div>` : ""}</td>
+            <td><div class="summaryLines">${safeSumHTML}</div>${r.note ? `<div style="color:var(--muted);margin-top:6px;">📝 ${escapeHtml(r.note)}</div>` : ""}</td>
             <td>
               <div class="actions">
                 <button class="mini btnSoft" data-act="edit" data-date="${safeDate}">编辑</button>
