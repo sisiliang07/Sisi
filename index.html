@@ -266,13 +266,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <textarea id="listenWhat" placeholder="例如：BBC Easy English - episode ..."></textarea>
       </div>
       <div>
-  <label>精听时长（分钟）</label>
-  <input id="listenIntMinutes" type="number" inputmode="numeric" placeholder="例如：20" />
-  <div style="height:10px"></div>
-  <label>泛听时长（分钟）</label>
-  <input id="listenExtMinutes" type="number" inputmode="numeric" placeholder="例如：15" />
-  <div class="hint">提示：听力总时长=精听+泛听；内容可留空。</div>
-</div>
+        <label>听力时长（分钟）</label>
+        <input id="listenMinutes" type="number" inputmode="numeric" min="0" placeholder="例如：20" />
+        <div class="hint">提示：如果你只想记录时长，内容可以留空。</div>
+      </div>
     </div>
 
     <h3 style="margin:14px 0 6px;font-size:14px;color:var(--muted);font-weight:700;">读完一本书（可选）</h3>
@@ -355,7 +352,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 </main>
 
 <script>
-
 (() => {
   // ====== 存储 key（尽量稳定，不因改代码清空）======
   const STORE_KEY = "sisi_en_study_log_v1";
@@ -383,22 +379,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     }
     const data = safeJSON(raw, { daily: {}, meta: {} });
     if(!data.daily) data.daily = {};
-
-    // 兼容旧数据：listenMinutes -> 精听 listenIntMinutes
-    let changed = false;
-    for(const k in data.daily){
-      const r = data.daily[k] || {};
-      if((r.listenMinutes|0) > 0 && (r.listenIntMinutes==null) && (r.listenExtMinutes==null)){
-        r.listenIntMinutes = r.listenMinutes|0;
-        r.listenExtMinutes = 0;
-        delete r.listenMinutes;
-        data.daily[k] = r;
-        changed = true;
-      }
-    }
-    if(changed){
-      localStorage.setItem(STORE_KEY, JSON.stringify(data));
-    }
     return data;
   }
   function writeStore(data){
@@ -441,8 +421,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       readTitle: str($("readTitle").value),
 
       listenWhat: str($("listenWhat").value),
-      listenIntMinutes: toInt($("listenIntMinutes").value),
-      listenExtMinutes: toInt($("listenExtMinutes").value),
+      listenMinutes: toInt($("listenMinutes").value),
 
       bookFinishedTitle: str($("bookFinishedTitle").value),
       bookFinishedWords: toInt($("bookFinishedWords").value),
@@ -458,12 +437,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     $("readTitle").value = obj.readTitle || "";
 
     $("listenWhat").value = obj.listenWhat || "";
-    // 兼容旧数据：listenMinutes -> 精听
-    const oldLM = (obj.listenMinutes|0);
-    const im = (obj.listenIntMinutes|0) || oldLM;
-    const em = (obj.listenExtMinutes|0);
-    $("listenIntMinutes").value = im ? String(im) : "";
-    $("listenExtMinutes").value = em ? String(em) : "";
+    $("listenMinutes").value = obj.listenMinutes || "";
 
     $("bookFinishedTitle").value = obj.bookFinishedTitle || "";
     $("bookFinishedWords").value = obj.bookFinishedWords || "";
@@ -477,8 +451,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     $("readMinutes").value = "";
     $("readTitle").value = "";
     $("listenWhat").value = "";
-    $("listenIntMinutes").value = "";
-    $("listenExtMinutes").value = "";
+    $("listenMinutes").value = "";
     $("bookFinishedTitle").value = "";
     $("bookFinishedWords").value = "";
     if(keepDate) $("date").value = d;
@@ -490,7 +463,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       (rec.enWords|0) > 0 ||
       (rec.readPages|0) > 0 ||
       (rec.readMinutes|0) > 0 ||
-      ((rec.listenIntMinutes|0)+(rec.listenExtMinutes|0)+(rec.listenMinutes|0)) > 0 ||
+      (rec.listenMinutes|0) > 0 ||
       (rec.bookFinishedWords|0) > 0 ||
       str(rec.note).length > 0 ||
       str(rec.listenWhat).length > 0 ||
@@ -516,8 +489,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       readTitle: f.readTitle,
 
       listenWhat: f.listenWhat,
-      listenIntMinutes: f.listenIntMinutes,
-      listenExtMinutes: f.listenExtMinutes,
+      listenMinutes: f.listenMinutes,
 
       bookFinishedTitle: f.bookFinishedTitle,
       bookFinishedWords: f.bookFinishedWords,
@@ -563,7 +535,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     const w = rec.enWords|0;
     const p = rec.readPages|0;
     const rm = rec.readMinutes|0;
-    const lm = (rec.listenIntMinutes|0) + (rec.listenExtMinutes|0) + (rec.listenMinutes|0);
+    const lm = rec.listenMinutes|0;
     const bw = rec.bookFinishedWords|0;
 
     if(w) parts.push(`单词${w}`);
@@ -597,7 +569,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       sumWords += rec.enWords|0;
       sumPages += rec.readPages|0;
       sumReadMin += rec.readMinutes|0;
-      sumListenMin += (rec.listenIntMinutes|0) + (rec.listenExtMinutes|0) + (rec.listenMinutes|0);
+      sumListenMin += rec.listenMinutes|0;
       sumBookWords += rec.bookFinishedWords|0;
       if(isActiveDay(rec)) dayCount++;
     }
@@ -730,7 +702,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   readStore(); // 确保存储存在
   renderAll();
 })();
-
 </script>
 
 </body>
