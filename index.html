@@ -169,7 +169,10 @@
     table{width:100%;border-collapse:collapse;margin-top:10px;}
     th,td{border-bottom:1px solid var(--border);padding:10px 8px;text-align:left;font-size:13px;vertical-align:top;}
     th{color:var(--muted);font-weight:600;font-size:12px;}
-    .actions button{padding:8px 10px;font-size:12px;}
+    .actions{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:10px;min-width:86px;padding:8px 0;}
+.actions button{padding:8px 12px;font-size:12px;min-width:72px;white-space:nowrap;}
+td.right.actions{vertical-align:middle;}
+
     .right{text-align:right;}
     .countBadge{
       display:inline-flex; align-items:center; gap:8px;
@@ -266,10 +269,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <textarea id="listenWhat" placeholder="例如：BBC Easy English - episode ..."></textarea>
       </div>
       <div>
-        <label>精听时长（分钟）</label>
+        <label>听力时长（分钟）</label>
         <input id="listenMinutes" type="number" inputmode="numeric" min="0" placeholder="例如：20" />
-        <label style="margin-top:10px;">泛听时长（分钟）</label>
-        <input id="listenExtMinutes" type="number" inputmode="numeric" min="0" placeholder="例如：15" />
         <div class="hint">提示：如果你只想记录时长，内容可以留空。</div>
       </div>
     </div>
@@ -425,8 +426,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       listenWhat: str($("listenWhat").value),
       listenMinutes: toInt($("listenMinutes").value),
 
-      listenExtMinutes: toInt($("listenExtMinutes").value),
-
       bookFinishedTitle: str($("bookFinishedTitle").value),
       bookFinishedWords: toInt($("bookFinishedWords").value),
     };
@@ -442,7 +441,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
     $("listenWhat").value = obj.listenWhat || "";
     $("listenMinutes").value = obj.listenMinutes || "";
-    $("listenExtMinutes").value = obj.listenExtMinutes || "";
 
     $("bookFinishedTitle").value = obj.bookFinishedTitle || "";
     $("bookFinishedWords").value = obj.bookFinishedWords || "";
@@ -457,7 +455,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     $("readTitle").value = "";
     $("listenWhat").value = "";
     $("listenMinutes").value = "";
-    $("listenExtMinutes").value = "";
     $("bookFinishedTitle").value = "";
     $("bookFinishedWords").value = "";
     if(keepDate) $("date").value = d;
@@ -470,7 +467,6 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       (rec.readPages|0) > 0 ||
       (rec.readMinutes|0) > 0 ||
       (rec.listenMinutes|0) > 0 ||
-      (rec.listenExtMinutes|0) > 0 ||
       (rec.bookFinishedWords|0) > 0 ||
       str(rec.note).length > 0 ||
       str(rec.listenWhat).length > 0 ||
@@ -543,14 +539,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{
     const p = rec.readPages|0;
     const rm = rec.readMinutes|0;
     const lm = rec.listenMinutes|0;
-    const le = rec.listenExtMinutes|0;
-    const ltot = lm + le;
     const bw = rec.bookFinishedWords|0;
 
     if(w) parts.push(`单词${w}`);
     if(p) parts.push(`阅读${p}页`);
     if(rm) parts.push(`读${rm}分`);
-    if(ltot) parts.push(`听${ltot}分`);
+    if(lm) parts.push(`听${lm}分`);
     if(bw) parts.push(`读完+${bw} words`);
 
     if(parts.length === 0){
@@ -578,7 +572,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
       sumWords += rec.enWords|0;
       sumPages += rec.readPages|0;
       sumReadMin += rec.readMinutes|0;
-      sumListenMin += (rec.listenMinutes|0) + (rec.listenExtMinutes|0);
+      sumListenMin += rec.listenMinutes|0;
       sumBookWords += rec.bookFinishedWords|0;
       if(isActiveDay(rec)) dayCount++;
     }
@@ -626,7 +620,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
         <td>${buildSummary(d, rec)}</td>
         <td class="right actions">
           <button data-edit="${d}">编辑</button>
-          <button class="danger" data-del="${d}">删</button>
+          <button class="danger" data-del="${d}">删除</button>
         </td>
       `;
       tbody.appendChild(tr);
