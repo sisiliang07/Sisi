@@ -231,19 +231,24 @@
       top: 0;
       z-index: 1;
     }
+    /* History table column sizing/alignment (keep each metric on one line) */
+    th:nth-child(1), td:nth-child(1){ width:96px; }
+    th:nth-child(3), td:nth-child(3){ width:92px; text-align:center; }
+    td:nth-child(2){ padding-right:6px; }
+
     .actions{ display:flex; gap:10px; flex-direction:column; align-items:center; justify-content:center; }
     td:last-child{ vertical-align:middle; text-align:center; }
-    td:last-child .actions .mini{ min-width:66px; }
+    td:last-child .actions .mini{ min-width:74px; }
     .mini{
-      padding:7px 10px;
-      border-radius:12px;
+      padding:6px 10px;
+      border-radius:999px;
       font-size:13px;
       box-shadow:none;
     }
 
     /* Summary: one category per line */
     .summaryLines{ display:flex; flex-direction:column; gap:10px; }
-    .sumLine{ line-height:1.15; }
+    .sumLine{ line-height:1.15; white-space:nowrap; }
 
     .toast{
       position:fixed;
