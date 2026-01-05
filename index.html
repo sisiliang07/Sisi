@@ -2,707 +2,833 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sisi 英语学习记录</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>英语学习记录（Sisi）</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest" />
-
-  <!-- iOS: 不提供 png 时，主屏幕可能用网页截图做图标（至少不会再引用孩子的旧图标） -->
-  <!-- 如果你以后愿意加 png：把 href 改成你上传的 png 文件名即可 -->
-  <link rel="apple-touch-icon" href="icon-512.png" />
-
-  <!-- 动态 favicon（SVG data url），不需要额外文件 -->
-  <link id="favicon" rel="icon" href="" />
+  <!-- PWA / iOS -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-512.png">
+  <meta name="theme-color" content="#f6f7ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <style>
     :root{
-      --bg1:#f6f7ff;
-      --bg2:#eef7ff;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --border:rgba(15,23,42,.10);
-      --shadow: 0 10px 24px rgba(15,23,42,.08);
+      --bg:#f6f7ff;
+      --panel:#ffffff;
+      --panel2:#fbfbff;
+      --text:#101828;
+      --muted:#667085;
+      --border:#e6e8f0;
+      --shadow: 0 14px 40px rgba(16,24,40,.10);
+      --shadow2: 0 8px 18px rgba(16,24,40,.08);
       --accent:#4f46e5;
-      --accent2:#06b6d4;
+      --accent2:#2563eb;
       --danger:#ef4444;
       --ok:#16a34a;
-      --chip:#f1f5f9;
+      --warn:#f59e0b;
       --radius:16px;
     }
 
-    *{box-sizing:border-box;}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
     body{
       margin:0;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
       color:var(--text);
-      background: radial-gradient(1200px 800px at 20% 0%, var(--bg2), transparent 60%),
-                  radial-gradient(1200px 800px at 90% 10%, #fdf2ff, transparent 60%),
-                  linear-gradient(180deg, var(--bg1), #ffffff 60%);
-      min-height:100vh;
+      background:
+        radial-gradient(1200px 600px at 50% -200px, rgba(79,70,229,.14), transparent 60%),
+        radial-gradient(900px 500px at 10% 20%, rgba(37,99,235,.10), transparent 55%),
+        radial-gradient(900px 500px at 90% 35%, rgba(99,102,241,.10), transparent 55%),
+        var(--bg);
     }
+
     header{
-      position:sticky; top:0; z-index:10;
-      background: rgba(246,247,255,.85);
-      backdrop-filter: blur(12px);
-      border-bottom:1px solid var(--border);
+      position:sticky; top:0; z-index:5;
+      backdrop-filter:saturate(180%) blur(16px);
+      background:rgba(246,247,255,.82);
+      border-bottom:1px solid rgba(230,232,240,.9);
+      padding:18px 16px 10px;
     }
-    .wrap{max-width:980px;margin:0 auto;padding:16px;}
-    h1{margin:0;font-size:18px;letter-spacing:.2px;}
-    .sub{margin-top:6px;color:var(--muted);font-size:12px;line-height:1.3;}
+    h1{ margin:0 0 6px; font-size:20px; letter-spacing:.2px; }
+    .sub{ color:var(--muted); font-size:12px; line-height:1.35; }
+
+    main{
+      max-width:980px;
+      margin:0 auto;
+      padding:14px 16px 44px;
+    }
+
     .grid{
       display:grid;
-      grid-template-columns: 1.05fr .95fr;
+      grid-template-columns: 1.2fr .8fr;
       gap:14px;
-      padding-bottom:40px;
+      align-items:start;
     }
     @media (max-width: 900px){
-      .grid{grid-template-columns:1fr;}
+      .grid{ grid-template-columns:1fr; }
     }
 
     .card{
-      background:var(--card);
+      background:var(--panel);
       border:1px solid var(--border);
-      box-shadow:var(--shadow);
       border-radius:var(--radius);
+      box-shadow:var(--shadow2);
       padding:14px;
     }
     .card h2{
-      margin:0 0 10px;
-      font-size:16px;
+      margin:0 0 12px;
+      font-size:18px;
+      letter-spacing:.2px;
     }
+
     .row{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
     }
     @media (max-width: 520px){
-      .row{grid-template-columns:1fr;}
+      .row{ grid-template-columns:1fr; }
     }
 
-    label{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px;}
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:10px 0 6px;
+    }
+
     input, textarea, select{
       width:100%;
       border:1px solid var(--border);
-      border-radius:12px;
-      padding:10px 10px;
+      background:var(--panel2);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 12px;
       font-size:14px;
       outline:none;
-      background:#fff;
-      color:var(--text);
+      box-shadow: inset 0 1px 0 rgba(16,24,40,.02);
     }
-    textarea{min-height:84px;resize:vertical;}
-    input:focus, textarea:focus, select:focus{border-color: rgba(79,70,229,.45); box-shadow: 0 0 0 4px rgba(79,70,229,.10);}
+    input:focus, textarea:focus, select:focus{
+      border-color: rgba(79,70,229,.45);
+      box-shadow: 0 0 0 4px rgba(79,70,229,.10);
+      background:#fff;
+    }
+    textarea{ min-height:86px; resize:vertical; }
 
-    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;}
+    /* 修复 iOS 日期输入框显示异常 */
+    input[type="date"]{
+      -webkit-appearance:none;
+      appearance:none;
+      text-align:left;
+      padding:12px 12px;
+      height:46px;
+      line-height:22px;
+    }
+    input[type="date"]::-webkit-date-and-time-value{ text-align:left; }
+    input[type="date"]::-webkit-calendar-picker-indicator{ opacity:.65; }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
     button{
       border:1px solid var(--border);
-      background:#fff;
+      background: #ffffff;
       color:var(--text);
+      border-radius:14px;
       padding:10px 12px;
-      border-radius:999px;
       font-size:14px;
+      box-shadow: var(--shadow2);
       cursor:pointer;
-      box-shadow: 0 6px 14px rgba(15,23,42,.06);
+      -webkit-tap-highlight-color: transparent;
     }
-    button.primary{
-      background: linear-gradient(135deg, var(--accent), #7c3aed);
+    button:active{ transform: translateY(1px); }
+    .btnPrimary{
+      border-color: rgba(79,70,229,.22);
+      background: linear-gradient(180deg, rgba(79,70,229,.98), rgba(37,99,235,.98));
       color:#fff;
-      border-color:transparent;
     }
-    button.ghost{
-      background:var(--chip);
+    .btnSoft{
+      border-color: rgba(79,70,229,.18);
+      background: rgba(79,70,229,.06);
+      color: #2b2b70;
     }
-    button.danger{
-      background:#fff;
-      color:var(--danger);
-      border-color: rgba(239,68,68,.35);
+    .btnDanger{
+      border-color: rgba(239,68,68,.24);
+      background: rgba(239,68,68,.08);
+      color:#7a1f1f;
     }
-    .hint{
-      margin-top:10px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-    }
-    .toast{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:12px;
-      background: #f8fafc;
-      border:1px dashed rgba(15,23,42,.14);
-      color:var(--muted);
-      font-size:12px;
-    }
-    .toast.ok{border-color: rgba(22,163,74,.25); background: rgba(22,163,74,.06); color:#166534;}
-    .toast.bad{border-color: rgba(239,68,68,.25); background: rgba(239,68,68,.06); color:#991b1b;}
 
-    .statbox{
-      display:grid;
-      gap:10px;
-      margin-top:10px;
-    }
     .pill{
-      display:flex;
-      justify-content:space-between;
+      display:inline-flex;
       align-items:center;
-      padding:10px 12px;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
       border:1px solid var(--border);
-      border-radius:14px;
       background:#fff;
+      font-size:12px;
+      color:var(--muted);
     }
-    .pill b{font-size:15px;}
-    .pill span{color:var(--muted);font-size:12px;}
-    .pill .val{font-size:16px;color:var(--text);font-weight:700;}
+
+    .hr{
+      height:1px; background:var(--border);
+      margin:14px 0;
+    }
+
+    .kpi{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    @media (max-width:520px){ .kpi{ grid-template-columns:1fr; } }
+    .kpiBox{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:12px;
+      box-shadow: var(--shadow2);
+    }
+    .kpiBox .t{ font-size:12px; color:var(--muted); margin-bottom:6px; }
+    .kpiBox .v{ font-size:18px; font-weight:650; }
+
+    .kpiGrid{ display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    .kpiRow{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+    .kpiL{ color:#6b7280; font-size:14px; }
+    .kpiR{ color:#111827; font-weight:650; font-size:14px; text-align:right; white-space:nowrap; }
+    .kpiRBig{ font-size:18px; }
+
+    th:last-child, td:last-child{ width:98px; min-width:98px; }
+    td:last-child{ padding-left:10px; padding-right:10px; }
+    td:last-child .actions{ display:flex; flex-direction:column; gap:10px; align-items:center; justify-content:center; }
+    td:last-child .actions .mini{ width:78px; min-width:78px; padding:10px 0; line-height:1.1; }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      font-size:13px;
+      overflow:hidden;
+    }
+    th, td{
+      text-align:left;
+      padding:10px 10px;
+      border-bottom:1px solid var(--border);
+      vertical-align:top;
+    }
+    th{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:600;
+      background: rgba(246,247,255,.75);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .actions{ display:flex; gap:10px; flex-direction:column; align-items:center; justify-content:center; }
+    td:last-child{ vertical-align:middle; text-align:center; }
+    td:last-child .actions .mini{ min-width:72px; }
     .mini{
-      display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;
-    }
-    .chip{
-      background:var(--chip);
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      color:var(--muted);
+      padding:7px 10px;
+      border-radius:12px;
+      font-size:13px;
+      box-shadow:none;
     }
 
-    table{width:100%;border-collapse:collapse;margin-top:10px;}
-    th,td{border-bottom:1px solid var(--border);padding:10px 8px;text-align:left;font-size:13px;vertical-align:top;}
-    th{color:var(--muted);font-weight:600;font-size:12px;}
-    .actions button{padding:8px 10px;font-size:12px;}
-    .right{text-align:right;}
-    .countBadge{
-      display:inline-flex; align-items:center; gap:8px;
-      background: var(--chip);
-      border:1px solid var(--border);
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background: rgba(16,24,40,.92);
+      color:#fff;
+      padding:10px 12px;
       border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      color:var(--muted);
-      float:right;
+      font-size:13px;
+      box-shadow: 0 10px 30px rgba(16,24,40,.25);
+      display:none;
+      z-index:999;
+      max-width: calc(100% - 24px);
+      text-align:center;
     }
 
-    .backupBanner{
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:8px;
+      line-height:1.45;
+    }
+
+    .banner{
       margin-top:10px;
       padding:10px 12px;
       border-radius:14px;
-      background: linear-gradient(135deg, rgba(79,70,229,.08), rgba(6,182,212,.08));
-      border:1px solid rgba(79,70,229,.14);
-      color:#334155;
+      border:1px solid rgba(245,158,11,.28);
+      background: rgba(245,158,11,.10);
+      color:#7a4a00;
       font-size:12px;
-      line-height:1.4;
+      display:none;
     }
-
-/* 修复 iOS 日期输入框显示异常 */
-input[type="date"]{
-  -webkit-appearance: none;
-  appearance: none;
-  text-align: left;
-  padding: 10px 10px;
-  height: 44px;
-  line-height: 22px;
-}
-input[type="date"]::-webkit-date-and-time-value{
-  text-align: left;
-}
-input[type="date"]::-webkit-calendar-picker-indicator{
-  opacity: .65;
-}
-
+    .banner strong{ font-weight:700; }
   </style>
 </head>
 
 <body>
-<header>
-  <div class="wrap">
+  <header>
     <h1>英语学习记录（Sisi）</h1>
     <div class="sub">每日记录 + 统计 + 已读书籍 words（数据保存在本机浏览器；建议每周导出一次备份）</div>
-  </div>
-</header>
+    <div class="banner" id="backupBanner"></div>
+  </header>
 
-<main class="wrap grid">
-  <!-- 今日记录 -->
-  <section class="card">
-    <h2>每日记录</h2>
+  <main class="grid">
+    <!-- 今日记录 -->
+    <section class="card">
+      <h2>每日记录</h2>
 
-    <div class="row">
-      <div>
-        <label>日期</label>
-        <input id="date" type="date" />
+      <div class="row">
+        <div>
+          <label>日期</label>
+          <input id="date" type="date" />
+        </div>
+        <div>
+          <label>快速备注（可选）</label>
+          <input id="note" placeholder="例如：状态一般、碎片时间多" />
+        </div>
       </div>
-      <div>
-        <label>快速备注（可选）</label>
-        <input id="note" placeholder="例如：状态一般、碎片时间多" />
-      </div>
-    </div>
 
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--muted);font-weight:700;">英语</h3>
+      <div class="hr"></div>
 
-    <div class="row">
       <div>
+        <h3 style="margin:0 0 6px;font-size:16px;">英语</h3>
+
         <label>英语单词（个）</label>
-        <input id="enWords" type="number" inputmode="numeric" min="0" placeholder="例如：30" />
-      </div>
-      <div>
+        <input id="enWords" type="number" inputmode="numeric" placeholder="例如：120" />
+
         <label>阅读页数（页）</label>
-        <input id="readPages" type="number" inputmode="numeric" min="0" placeholder="例如：12" />
-      </div>
-    </div>
+        <input id="readPages" type="number" inputmode="numeric" placeholder="例如：12" />
 
-    <div class="row">
-      <div>
         <label>阅读时长（分钟）</label>
-        <input id="readMinutes" type="number" inputmode="numeric" min="0" placeholder="例如：25" />
-      </div>
-      <div>
+        <input id="readMin" type="number" inputmode="numeric" placeholder="例如：40" />
+
         <label>阅读书名（可选）</label>
-        <input id="readTitle" placeholder="例如：Atomic Habits" />
-      </div>
-    </div>
+        <input id="readBook" placeholder="例如：BE &amp; Court" />
 
-    <div class="row">
-      <div>
         <label>听力内容（可选，多行）</label>
-        <textarea id="listenWhat" placeholder="例如：BBC Easy English - episode ..."></textarea>
+        <textarea id="listenText" placeholder="例如：BBC Easy English&#10;或者：6 Minute English"></textarea>
+
+        <div class="row">
+          <div>
+            <label>精听时长（分钟）</label>
+            <input id="listenMin" type="number" inputmode="numeric" placeholder="例如：30" />
+          </div>
+          <div>
+            <label>泛听时长（分钟）</label>
+            <input id="listenWideMin" type="number" inputmode="numeric" placeholder="例如：20" />
+          </div>
+        </div>
       </div>
-      <div>
-        <label>听力时长（分钟）</label>
-        <input id="listenMinutes" type="number" inputmode="numeric" min="0" placeholder="例如：20" />
-        <div class="hint">提示：如果你只想记录时长，内容可以留空。</div>
+
+      <div class="btnRow">
+        <button class="btnPrimary" id="saveBtn">保存 / 更新</button>
+        <button class="btnSoft" id="loadBtn">载入该日期</button>
+        <button class="btnDanger" id="clearBtn">清空</button>
       </div>
-    </div>
 
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--muted);font-weight:700;">读完一本书（可选）</h3>
-    <div class="row">
-      <div>
-        <label>书名</label>
-        <input id="bookFinishedTitle" placeholder="例如：Charlotte’s Web" />
+      <div class="hint">
+        小提示：<span class="pill">“载入该日期”</span> 会把那天已保存的数据填回表单；<span class="pill">“清空”</span> 只清空当前表单，不会删除历史。
       </div>
-      <div>
-        <label>全书字数 words（只在读完时填一次）</label>
-        <input id="bookFinishedWords" type="number" inputmode="numeric" min="0" placeholder="例如：32000" />
+    </section>
+
+    <!-- 统计 / 备份 -->
+    <section class="card">
+      <h2>统计</h2>
+
+      <label>范围</label>
+      <select id="range">
+        <option value="month">本月</option>
+        <option value="year">本年</option>
+        <option value="all">全部</option>
+      </select>
+
+      <div class="hr"></div>
+
+      <div class="kpi">
+        <div class="kpiBox">
+          <div class="t">累计（所选范围）</div>
+          <div class="kpiGrid">
+            <div class="kpiRow">
+              <div class="kpiL">英语单词</div>
+              <div class="kpiR" id="kpiWords">0</div>
+            </div>
+            <div class="kpiRow">
+              <div class="kpiL">阅读</div>
+              <div class="kpiR" id="kpiRead">0 页 · 0 分</div>
+            </div>
+            <div class="kpiRow">
+              <div class="kpiL">听力</div>
+              <div class="kpiR" id="kpiListen">精听 0 分 · 泛听 0 分</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kpiBox">
+          <div class="t">总学习时长（所选范围）</div>
+          <div class="v" id="kpiTime">0 分</div>
+          <div class="hint">= 阅读 + 精听 + 泛听</div>
+        </div>
+
+        <div class="kpiBox">
+          <div class="t">累计天数（所选范围）</div>
+          <div class="v" id="kpiDays">总计：0 天</div>
+          <div class="hint" id="kpiDays2">有英语记录：0 天</div>
+        </div>
+
+        <div class="kpiBox">
+          <div class="t">已读书籍 words（手动加）</div>
+          <div class="v" id="kpiBookWords">0 words</div>
+          <div class="hint">适合“读完一本再加一次”，不需要每天算。</div>
+        </div>
       </div>
-    </div>
 
-    <div class="btns">
-      <button class="primary" id="btnSave">保存 / 更新</button>
-      <button class="ghost" id="btnLoad">载入该日期</button>
-      <button class="danger" id="btnClear">清空输入框</button>
-    </div>
+      <div class="hr"></div>
 
-    <div id="msg" class="toast">不会打卡，只统计「有记录的天数」。</div>
-  </section>
+      <h2 style="margin-top:0;">历史记录 <span class="pill" id="countPill">0 条</span></h2>
 
-  <!-- 统计 -->
-  <section class="card">
-    <h2>统计 <span class="countBadge" id="countBadge">0 条</span></h2>
+      <div style="max-height:360px; overflow:auto; border:1px solid var(--border); border-radius:16px;">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:110px;">日期</th>
+              <th>摘要</th>
+              <th style="width:150px;">操作</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody">
+            <tr><td colspan="3" style="color:var(--muted);">还没有记录。</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-    <label>范围</label>
-    <select id="range">
-      <option value="month">本月</option>
-      <option value="year">今年</option>
-      <option value="all">全部</option>
-    </select>
+      <div class="hr"></div>
 
-    <div class="backupBanner">
-      备份提醒：建议每周导出一次 JSON（比如周日）。<br/>
-      你更换设备/清理浏览器时，只有导出的备份能恢复数据。
-    </div>
+      <h2 style="margin-top:0;">备份 / 恢复</h2>
+      <div class="btnRow">
+        <button class="btnSoft" id="exportBtn">导出 JSON</button>
+        <button class="btnSoft" id="importBtn">导入 JSON</button>
+        <input id="importFile" type="file" accept="application/json" style="display:none;" />
+      </div>
+      <div class="hint">
+        建议：每周导出一次 JSON 到「文件/iCloud/网盘」。<br/>
+        说明：GitHub Pages 不会自动云同步；不同设备/不同浏览器的数据不会自动互通。
+      </div>
 
-    <div class="statbox">
-      <div class="pill"><span>累计单词</span><div class="val" id="sumWords">0</div></div>
-      <div class="pill"><span>阅读（页 / 分）</span><div class="val"><span id="sumPages" style="font-weight:800;color:var(--text);">0</span> 页 · <span id="sumReadMin" style="font-weight:800;color:var(--text);">0</span> 分</div></div>
-      <div class="pill"><span>听力（分钟）</span><div class="val" id="sumListenMin">0</div></div>
-      <div class="pill"><span>总学习时长（读+听，分钟）</span><div class="val" id="sumStudyMin">0</div></div>
-      <div class="pill"><span>累计天数（有记录）</span><div class="val" id="sumDays">0</div></div>
-      <div class="pill"><span>已读书籍 words（读完累加）</span><div class="val" id="sumBookWords">0</div></div>
-    </div>
+      <div class="hr"></div>
 
-    <div class="mini">
-      <div class="chip">提示：天数=当天任一项>0 或有备注/听力内容/读完书</div>
-      <div class="chip">提示：读完书 words 只在读完那天填一次</div>
-    </div>
+      <h2 style="margin-top:0;">已读书籍 words</h2>
+      <label>书名</label>
+      <input id="bookTitle" placeholder="例如：Atomic Habits" />
+      <label>字数 / words（整数）</label>
+      <input id="bookWords" type="number" inputmode="numeric" placeholder="例如：70000" />
+      <div class="btnRow">
+        <button class="btnPrimary" id="addBookBtn">添加 / 更新这本</button>
+        <button class="btnDanger" id="clearBookBtn">清空输入</button>
+      </div>
+      <div class="hint" id="bookHint"></div>
+    </section>
+  </main>
 
-    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;"/>
+  <div class="toast" id="toast"></div>
 
-    <h2 style="margin:0 0 10px;">历史记录</h2>
-    <div style="overflow:auto;">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:110px;">日期</th>
-            <th>概要</th>
-            <th class="right" style="width:88px;">操作</th>
-          </tr>
-        </thead>
-        <tbody id="history"></tbody>
-      </table>
-    </div>
+  <script>
 
-    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;"/>
+    /**********************
+     * Storage (versioned)
+     **********************/
+    const APP_KEY = "sisi_en_study_log_v3"; // 改版不改 key，数据不会因更新丢失
+    const DAYS_BACKUP_KEY = "sisi_en_last_backup_at";
 
-    <h2 style="margin:0 0 10px;">备份 / 恢复</h2>
-    <div class="btns">
-      <button class="ghost" id="btnExport">导出 JSON</button>
-      <button class="ghost" id="btnImport">导入 JSON</button>
-      <input id="importFile" type="file" accept="application/json" style="display:none;">
-    </div>
-    <div class="hint">导出后保存到「文件」或 iCloud Drive。导入会覆盖当前数据（导入前建议先导出备份）。</div>
-  </section>
-</main>
-
-<script>
-(() => {
-  // ====== 存储 key（尽量稳定，不因改代码清空）======
-  const STORE_KEY = "sisi_en_study_log_v1";
-
-  // ====== 工具 ======
-  const $ = (id) => document.getElementById(id);
-  const pad2 = (n) => String(n).padStart(2, "0");
-  const todayISO = () => {
-    const d = new Date();
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-  };
-  const toInt = (v) => {
-    const n = parseInt(String(v ?? "").trim(), 10);
-    return Number.isFinite(n) && n > 0 ? n : 0;
-  };
-  const str = (v) => String(v ?? "").trim();
-  const safeJSON = (s, fallback) => { try { return JSON.parse(s); } catch { return fallback; } };
-
-  function readStore(){
-    const raw = localStorage.getItem(STORE_KEY);
-    if(!raw){
-      const init = { daily: {}, meta: { createdAt: Date.now() } };
-      localStorage.setItem(STORE_KEY, JSON.stringify(init));
-      return init;
+    function readStore(){
+      try{
+        const raw = localStorage.getItem(APP_KEY);
+        if(!raw) return { daily:{}, books:{} };
+        const obj = JSON.parse(raw);
+        if(!obj.daily) obj.daily = {};
+        if(!obj.books) obj.books = {};
+        return obj;
+      }catch(e){
+        return { daily:{}, books:{} };
+      }
     }
-    const data = safeJSON(raw, { daily: {}, meta: {} });
-    if(!data.daily) data.daily = {};
-    return data;
-  }
-  function writeStore(data){
-    localStorage.setItem(STORE_KEY, JSON.stringify(data));
-  }
-
-  function setMsg(text, type=""){
-    const el = $("msg");
-    el.textContent = text;
-    el.className = "toast" + (type ? " " + type : "");
-  }
-
-  // ====== 生成一个简洁 favicon（SVG data url）======
-  function setFavicon(){
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
-        <defs>
-          <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#4f46e5"/>
-            <stop offset="1" stop-color="#06b6d4"/>
-          </linearGradient>
-        </defs>
-        <rect x="0" y="0" width="128" height="128" rx="26" fill="url(#g)"/>
-        <text x="64" y="58" text-anchor="middle" font-size="34" font-family="Arial" fill="white" font-weight="700">Sisi</text>
-        <text x="64" y="94" text-anchor="middle" font-size="30" font-family="Arial" fill="white" font-weight="700">EN</text>
-      </svg>`;
-    const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg.trim());
-    $("favicon").href = url;
-  }
-
-  // ====== 读写表单 ======
-  function getForm(){
-    return {
-      date: $("date").value,
-      note: str($("note").value),
-
-      enWords: toInt($("enWords").value),
-      readPages: toInt($("readPages").value),
-      readMinutes: toInt($("readMinutes").value),
-      readTitle: str($("readTitle").value),
-
-      listenWhat: str($("listenWhat").value),
-      listenMinutes: toInt($("listenMinutes").value),
-
-      bookFinishedTitle: str($("bookFinishedTitle").value),
-      bookFinishedWords: toInt($("bookFinishedWords").value),
-    };
-  }
-
-  function setForm(obj){
-    $("note").value = obj.note || "";
-
-    $("enWords").value = obj.enWords || "";
-    $("readPages").value = obj.readPages || "";
-    $("readMinutes").value = obj.readMinutes || "";
-    $("readTitle").value = obj.readTitle || "";
-
-    $("listenWhat").value = obj.listenWhat || "";
-    $("listenMinutes").value = obj.listenMinutes || "";
-
-    $("bookFinishedTitle").value = obj.bookFinishedTitle || "";
-    $("bookFinishedWords").value = obj.bookFinishedWords || "";
-  }
-
-  function clearInputs(keepDate=true){
-    const d = keepDate ? $("date").value : "";
-    $("note").value = "";
-    $("enWords").value = "";
-    $("readPages").value = "";
-    $("readMinutes").value = "";
-    $("readTitle").value = "";
-    $("listenWhat").value = "";
-    $("listenMinutes").value = "";
-    $("bookFinishedTitle").value = "";
-    $("bookFinishedWords").value = "";
-    if(keepDate) $("date").value = d;
-  }
-
-  function isActiveDay(rec){
-    // 有任何学习数据/内容，即算一天
-    return (
-      (rec.enWords|0) > 0 ||
-      (rec.readPages|0) > 0 ||
-      (rec.readMinutes|0) > 0 ||
-      (rec.listenMinutes|0) > 0 ||
-      (rec.bookFinishedWords|0) > 0 ||
-      str(rec.note).length > 0 ||
-      str(rec.listenWhat).length > 0 ||
-      str(rec.readTitle).length > 0 ||
-      str(rec.bookFinishedTitle).length > 0
-    );
-  }
-
-  // ====== 保存 / 载入 ======
-  function saveForDate(){
-    const f = getForm();
-    if(!f.date){
-      setMsg("请先选择日期。", "bad");
-      return;
-    }
-    const store = readStore();
-    store.daily[f.date] = {
-      note: f.note,
-
-      enWords: f.enWords,
-      readPages: f.readPages,
-      readMinutes: f.readMinutes,
-      readTitle: f.readTitle,
-
-      listenWhat: f.listenWhat,
-      listenMinutes: f.listenMinutes,
-
-      bookFinishedTitle: f.bookFinishedTitle,
-      bookFinishedWords: f.bookFinishedWords,
-
-      updatedAt: Date.now()
-    };
-    writeStore(store);
-    setMsg("已保存 ✅", "ok");
-    renderAll();
-  }
-
-  function loadForDate(){
-    const d = $("date").value;
-    if(!d){
-      setMsg("请先选择日期。", "bad");
-      return;
-    }
-    const store = readStore();
-    const rec = store.daily[d];
-    if(rec){
-      setForm(rec);
-      setMsg("已载入该日期记录。", "ok");
-    }else{
-      clearInputs(true);
-      setMsg("该日期暂无记录，已清空输入框。", "ok");
-    }
-  }
-
-  // ====== 统计 & 历史 ======
-  function inRange(dateISO, mode){
-    if(mode === "all") return true;
-    const [y,m] = dateISO.split("-").map(Number);
-    const now = new Date();
-    const cy = now.getFullYear();
-    const cm = now.getMonth()+1;
-    if(mode === "year") return y === cy;
-    if(mode === "month") return y === cy && m === cm;
-    return true;
-  }
-
-  function buildSummary(dateISO, rec){
-    const parts = [];
-    const w = rec.enWords|0;
-    const p = rec.readPages|0;
-    const rm = rec.readMinutes|0;
-    const lm = rec.listenMinutes|0;
-    const bw = rec.bookFinishedWords|0;
-
-    if(w) parts.push(`单词${w}`);
-    if(p) parts.push(`阅读${p}页`);
-    if(rm) parts.push(`读${rm}分`);
-    if(lm) parts.push(`听${lm}分`);
-    if(bw) parts.push(`读完+${bw} words`);
-
-    if(parts.length === 0){
-      if(str(rec.note)) parts.push(`备注：${rec.note}`);
-      else parts.push("（空记录）");
-    }
-    return parts.join(" · ");
-  }
-
-  function calcStats(){
-    const store = readStore();
-    const mode = $("range").value;
-    const daily = store.daily || {};
-    const dates = Object.keys(daily).sort((a,b)=> b.localeCompare(a));
-
-    let sumWords=0, sumPages=0, sumReadMin=0, sumListenMin=0, sumBookWords=0;
-    let dayCount=0;
-    let totalCount=0;
-
-    for(const d of dates){
-      const rec = daily[d] || {};
-      if(!inRange(d, mode)) continue;
-
-      totalCount++;
-      sumWords += rec.enWords|0;
-      sumPages += rec.readPages|0;
-      sumReadMin += rec.readMinutes|0;
-      sumListenMin += rec.listenMinutes|0;
-      sumBookWords += rec.bookFinishedWords|0;
-      if(isActiveDay(rec)) dayCount++;
+    function writeStore(store){
+      localStorage.setItem(APP_KEY, JSON.stringify(store));
     }
 
-    return {
-      dates, daily, mode,
-      sumWords, sumPages, sumReadMin, sumListenMin,
-      sumStudyMin: sumReadMin + sumListenMin,
-      sumBookWords,
-      dayCount,
-      totalCount
-    };
-  }
+    function isoToday(){
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const day = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+    function inRange(iso, mode){
+      if(mode === "all") return true;
+      const [y,m] = iso.split("-").map(Number);
+      const now = new Date();
+      const ny = now.getFullYear();
+      const nm = now.getMonth()+1;
+      if(mode === "year") return y === ny;
+      if(mode === "month") return (y === ny && m === nm);
+      return true;
+    }
+    function num(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
 
-  function renderStats(){
-    const s = calcStats();
-    $("sumWords").textContent = s.sumWords;
-    $("sumPages").textContent = s.sumPages;
-    $("sumReadMin").textContent = s.sumReadMin;
-    $("sumListenMin").textContent = s.sumListenMin;
-    $("sumStudyMin").textContent = s.sumStudyMin;
-    $("sumBookWords").textContent = s.sumBookWords;
-    $("sumDays").textContent = s.dayCount;
-    $("countBadge").textContent = `${s.totalCount} 条`;
-  }
-
-  function renderHistory(){
-    const { dates, daily, mode } = calcStats();
-    const tbody = $("history");
-    tbody.innerHTML = "";
-
-    const filtered = dates.filter(d => inRange(d, mode));
-    if(filtered.length === 0){
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td colspan="3" style="color:#64748b;">还没有记录。</td>`;
-      tbody.appendChild(tr);
-      return;
+    function toast(msg){
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      clearTimeout(toast._t);
+      toast._t = setTimeout(()=>{ el.style.display="none"; }, 1800);
     }
 
-    for(const d of filtered){
-      const rec = daily[d] || {};
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${d}</td>
-        <td>${buildSummary(d, rec)}</td>
-        <td class="right actions">
-          <button data-edit="${d}">编辑</button>
-          <button class="danger" data-del="${d}">删</button>
-        </td>
-      `;
-      tbody.appendChild(tr);
+    /**********************
+     * Elements
+     **********************/
+    const $ = (id)=>document.getElementById(id);
+
+    const dateEl = $("date");
+    const noteEl = $("note");
+
+    const enWordsEl = $("enWords");
+    const readPagesEl = $("readPages");
+    const readMinEl = $("readMin");
+    const readBookEl = $("readBook");
+    const listenTextEl = $("listenText");
+    const listenMinEl = $("listenMin");          // 精听（原字段）
+    const listenWideMinEl = $("listenWideMin");  // 泛听（新增）
+
+    const rangeEl = $("range");
+
+    /**********************
+     * Form helpers
+     **********************/
+    function clearForm(){
+      // 只清空表单，不删历史
+      noteEl.value = "";
+      enWordsEl.value = "";
+      readPagesEl.value = "";
+      readMinEl.value = "";
+      readBookEl.value = "";
+      listenTextEl.value = "";
+      listenMinEl.value = "";
+      listenWideMinEl.value = "";
+      toast("已清空表单");
     }
 
-    tbody.querySelectorAll("button[data-edit]").forEach(btn=>{
-      btn.addEventListener("click", () => {
-        $("date").value = btn.getAttribute("data-edit");
-        loadForDate();
-        window.scrollTo({top:0, behavior:"smooth"});
-      });
+    function setFormFromRecord(r){
+      noteEl.value = r.note || "";
+      enWordsEl.value = (r.enWords ?? "") === 0 ? 0 : (r.enWords ?? "");
+      readPagesEl.value = (r.readPages ?? "") === 0 ? 0 : (r.readPages ?? "");
+      readMinEl.value = (r.readMin ?? "") === 0 ? 0 : (r.readMin ?? "");
+      readBookEl.value = r.readBook || "";
+      listenTextEl.value = r.listenText || "";
+      listenMinEl.value = (r.listenMin ?? "") === 0 ? 0 : (r.listenMin ?? "");
+      listenWideMinEl.value = (r.listenWideMin ?? "") === 0 ? 0 : (r.listenWideMin ?? "");
+    }
+
+    function getRecordFromForm(){
+      const date = dateEl.value || isoToday();
+      return {
+        date,
+        note: noteEl.value.trim(),
+        enWords: num(enWordsEl.value),
+        readPages: num(readPagesEl.value),
+        readMin: num(readMinEl.value),
+        readBook: readBookEl.value.trim(),
+        listenText: listenTextEl.value.trim(),
+        listenMin: num(listenMinEl.value),              // 精听（原逻辑）
+        listenWideMin: num(listenWideMinEl.value)       // 泛听（新增）
+      };
+    }
+
+    function summary(r){
+      const parts = [];
+      if(r.enWords) parts.push(`单词${r.enWords}`);
+      if(r.readPages) parts.push(`阅读${r.readPages}页`);
+      if(r.readMin) parts.push(`阅读${r.readMin}分`);
+      if(r.listenMin) parts.push(`精听${r.listenMin}分`);
+      if(r.listenWideMin) parts.push(`泛听${r.listenWideMin}分`);
+      if(!parts.length) parts.push("（空）");
+      return parts.join(" · ");
+    }
+
+    /**********************
+     * Render: history + stats
+     **********************/
+    function render(){
+      const store = readStore();
+      const daily = store.daily || {};
+      const keys = Object.keys(daily).sort((a,b)=> b.localeCompare(a));
+      $("countPill").textContent = `${keys.length} 条`;
+
+      // History table
+      const tb = $("historyBody");
+      tb.innerHTML = "";
+      if(keys.length === 0){
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td colspan="3" style="color:var(--muted);">还没有记录。</td>`;
+        tb.appendChild(tr);
+      }else{
+        for(const k of keys){
+          const r = daily[k];
+          const tr = document.createElement("tr");
+          const safeDate = k;
+          const safeSum = summary(r);
+          tr.innerHTML = `
+            <td>${safeDate}</td>
+            <td>${safeSum}${r.note ? `<div style="color:var(--muted);margin-top:6px;">📝 ${escapeHtml(r.note)}</div>` : ""}</td>
+            <td>
+              <div class="actions">
+                <button class="mini btnSoft" data-act="edit" data-date="${safeDate}">编辑</button>
+                <button class="mini btnDanger" data-act="del" data-date="${safeDate}">删除</button>
+              </div>
+            </td>
+          `;
+          tb.appendChild(tr);
+        }
+      }
+
+      // Stats
+      const mode = rangeEl.value;
+      let totalWords=0, totalPages=0, totalReadMin=0, totalListenMin=0, totalListenWide=0;
+      let anyDays=0, enDays=0;
+
+      for(const k of Object.keys(daily)){
+        if(!inRange(k, mode)) continue;
+        const r = daily[k] || {};
+        const hasAny = (num(r.enWords)+num(r.readPages)+num(r.readMin)+num(r.listenMin)+num(r.listenWideMin)) > 0 || (r.note && r.note.trim()) || (r.readBook && r.readBook.trim()) || (r.listenText && r.listenText.trim());
+        const hasEn = (num(r.enWords)+num(r.readPages)+num(r.readMin)+num(r.listenMin)+num(r.listenWideMin)) > 0 || (r.readBook && r.readBook.trim()) || (r.listenText && r.listenText.trim());
+
+        if(hasAny) anyDays += 1;
+        if(hasEn) enDays += 1;
+
+        totalWords += num(r.enWords);
+        totalPages += num(r.readPages);
+        totalReadMin += num(r.readMin);
+        totalListenMin += num(r.listenMin);
+        totalListenWide += num(r.listenWideMin);
+      }
+
+      $("kpiWords").textContent = `${totalWords}`;
+      $("kpiRead").textContent = `${totalPages} 页 · ${totalReadMin} 分`;
+      $("kpiListen").textContent = `精听 ${totalListenMin} 分 · 泛听 ${totalListenWide} 分`;
+      $("kpiTime").textContent = `${totalReadMin + totalListenMin + totalListenWide} 分`;
+      $("kpiDays").textContent = `总计：${anyDays} 天`;
+      $("kpiDays2").textContent = `有英语记录：${enDays} 天`;
+
+      // Books words
+      const books = store.books || {};
+      let sumWords = 0;
+      const bookList = Object.entries(books).sort((a,b)=> a[0].localeCompare(b[0]));
+      for(const [,w] of bookList) sumWords += num(w);
+      $("kpiBookWords").textContent = `${sumWords} words`;
+
+      // Book hint preview
+      if(bookList.length){
+        const preview = bookList.slice(0,4).map(([t,w]) => `${t}(${w})`).join(" · ");
+        $("bookHint").textContent = `已保存 ${bookList.length} 本：` + preview + (bookList.length>4 ? " …" : "");
+      }else{
+        $("bookHint").textContent = "还没有添加已读书籍。";
+      }
+
+      renderBackupBanner();
+    }
+
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /**********************
+     * Backup reminder
+     **********************/
+    function renderBackupBanner(){
+      const banner = $("backupBanner");
+      const last = localStorage.getItem(DAYS_BACKUP_KEY);
+      if(!last){
+        banner.style.display = "block";
+        banner.innerHTML = `⚠️ <strong>备份提醒：</strong> 你还没有导出过备份。建议每周点击一次「导出 JSON」。`;
+        return;
+      }
+      const lastTs = Number(last);
+      if(!Number.isFinite(lastTs)){
+        banner.style.display = "none";
+        return;
+      }
+      const diffDays = Math.floor((Date.now() - lastTs) / (1000*60*60*24));
+      if(diffDays >= 7){
+        banner.style.display = "block";
+        banner.innerHTML = `⚠️ <strong>备份提醒：</strong> 距离上次导出已 <strong>${diffDays}</strong> 天，建议现在导出一次 JSON。`;
+      }else{
+        banner.style.display = "none";
+      }
+    }
+
+    /**********************
+     * Actions
+     **********************/
+    $("saveBtn").addEventListener("click", ()=>{
+      const r = getRecordFromForm();
+      const store = readStore();
+      store.daily[r.date] = r;
+      writeStore(store);
+      render();
+      toast("已保存");
     });
 
-    tbody.querySelectorAll("button[data-del]").forEach(btn=>{
-      btn.addEventListener("click", () => {
-        const d = btn.getAttribute("data-del");
-        if(!confirm(`确认删除 ${d} 这条记录？`)) return;
+    $("loadBtn").addEventListener("click", ()=>{
+      const d = dateEl.value || isoToday();
+      const store = readStore();
+      const r = store.daily[d];
+      if(r){
+        setFormFromRecord(r);
+        toast("已载入");
+      }else{
+        clearForm();
+        toast("该日期没有记录（已清空表单）");
+      }
+    });
+
+    $("clearBtn").addEventListener("click", ()=>{
+      clearForm();
+    });
+
+    $("historyBody").addEventListener("click", (e)=>{
+      const btn = e.target.closest("button");
+      if(!btn) return;
+      const act = btn.dataset.act;
+      const d = btn.dataset.date;
+      if(!act || !d) return;
+
+      if(act === "edit"){
+        dateEl.value = d;
+        const store = readStore();
+        const r = store.daily[d];
+        if(r){
+          setFormFromRecord(r);
+          toast("已载入到表单");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }
+
+      if(act === "del"){
+        if(!confirm(`确定删除 ${d} 的记录吗？`)) return;
         const store = readStore();
         delete store.daily[d];
         writeStore(store);
-        setMsg("已删除。", "ok");
-        renderAll();
-      });
+        render();
+        toast("已删除");
+      }
     });
-  }
 
-  // ====== 备份 / 恢复 ======
-  function exportJSON(){
-    const data = readStore();
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `Sisi_English_Study_Log_${todayISO()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(a.href);
-    setMsg("已导出备份 JSON。", "ok");
-  }
+    rangeEl.addEventListener("change", render);
 
-  function importJSON(file){
-    const reader = new FileReader();
-    reader.onload = () => {
-      const obj = safeJSON(reader.result, null);
-      if(!obj || typeof obj !== "object" || !obj.daily){
-        setMsg("导入失败：JSON 格式不对。", "bad");
+    /**********************
+     * Export / Import
+     **********************/
+    $("exportBtn").addEventListener("click", ()=>{
+      const store = readStore();
+      const blob = new Blob([JSON.stringify(store, null, 2)], { type:"application/json" });
+      const a = document.createElement("a");
+      const stamp = isoToday().replaceAll("-","");
+      a.href = URL.createObjectURL(blob);
+      a.download = `sisi_en_backup_${stamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+
+      localStorage.setItem(DAYS_BACKUP_KEY, String(Date.now()));
+      renderBackupBanner();
+      toast("已导出备份");
+    });
+    $("importBtn")?.addEventListener("click", ()=> $("importFile").click());
+
+    $("importFile").addEventListener("change", async (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      try{
+        const text = await file.text();
+        const obj = JSON.parse(text);
+
+        if(!obj || typeof obj !== "object") throw new Error("格式不对");
+        if(!obj.daily) obj.daily = {};
+        if(!obj.books) obj.books = {};
+
+        const store = readStore();
+
+        // merge: imported wins
+        store.daily = { ...(store.daily||{}), ...(obj.daily||{}) };
+        store.books = { ...(store.books||{}), ...(obj.books||{}) };
+
+        writeStore(store);
+        render();
+        toast("已导入");
+      }catch(err){
+        alert("导入失败：请确认是导出的 JSON 文件。");
+      }finally{
+        e.target.value = "";
+      }
+    });
+
+    /**********************
+     * Books words
+     **********************/
+    $("addBookBtn").addEventListener("click", ()=>{
+      const title = $("bookTitle").value.trim();
+      const words = num($("bookWords").value);
+      if(!title){
+        toast("请先填书名");
         return;
       }
-      if(!confirm("导入会覆盖当前数据，确认继续？")) return;
-      writeStore(obj);
-      setMsg("导入成功 ✅", "ok");
-      renderAll();
-    };
-    reader.readAsText(file);
-  }
+      if(words <= 0){
+        toast("words 需要是正整数");
+        return;
+      }
+      const store = readStore();
+      store.books[title] = words;
+      writeStore(store);
+      $("bookTitle").value = "";
+      $("bookWords").value = "";
+      render();
+      toast("已保存书籍 words");
+    });
 
-  function renderAll(){
-    renderStats();
-    renderHistory();
-  }
+    $("clearBookBtn").addEventListener("click", ()=>{
+      $("bookTitle").value = "";
+      $("bookWords").value = "";
+      toast("已清空");
+    });
 
-  // ====== 事件绑定 ======
-  $("btnSave").addEventListener("click", saveForDate);
-  $("btnLoad").addEventListener("click", loadForDate);
-  $("btnClear").addEventListener("click", () => {
-    clearInputs(true);
-    setMsg("已清空输入框。", "ok");
-  });
-  $("range").addEventListener("change", renderAll);
+    /**********************
+     * Init
+     **********************/
+    (function init(){
+      dateEl.value = isoToday();
+      render();
 
-  $("btnExport").addEventListener("click", exportJSON);
-  $("btnImport").addEventListener("click", ()=> $("importFile").click());
-  $("importFile").addEventListener("change", (e)=>{
-    const f = e.target.files && e.target.files[0];
-    if(f) importJSON(f);
-    e.target.value = "";
-  });
-
-  // ====== 初始化 ======
-  setFavicon();
-  $("date").value = todayISO();
-  readStore(); // 确保存储存在
-  renderAll();
-})();
+      // 首次打开：自动载入今天（如果有）
+      const store = readStore();
+      const r = store.daily[dateEl.value];
+      if(r) setFormFromRecord(r);
+    })();
+  
 </script>
-
 </body>
 </html>
