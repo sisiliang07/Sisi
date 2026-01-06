@@ -442,13 +442,32 @@
       <h2 style="margin-top:0;">已读书籍 words</h2>
       <label>书名</label>
       <input id="bookTitle" placeholder="例如：Atomic Habits" />
-      <label>字数 / words（整数）</label>
+      <label>字数 / words</label>
       <input id="bookWords" type="number" inputmode="numeric" placeholder="例如：70000" />
       <div class="btnRow">
         <button class="btnPrimary" id="addBookBtn">添加 / 更新这本</button>
         <button class="btnDanger" id="clearBookBtn">清空输入</button>
       </div>
       <div class="hint" id="bookHint"></div>
+
+      <div class="bookListWrap" style="margin-top:14px;">
+        <div class="tableWrap" style="max-height:260px; overflow:auto;">
+          <table class="histTable">
+            <thead>
+              <tr>
+                <th style="width:55%;">书名</th>
+                <th style="width:20%;">words</th>
+                <th style="width:25%;">操作</th>
+              </tr>
+            </thead>
+            <tbody id="bookBody">
+              <tr><td colspan="3" style="color:var(--muted);">还没有添加已读书籍。</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="hint" style="margin-top:10px;">提示：点“编辑”会把书名和字数带回上面的输入框；点“删除”会从列表移除。</div>
+      </div>
+
     </section>
   </main>
 
@@ -659,7 +678,69 @@
         $("bookHint").textContent = "还没有添加已读书籍。";
       }
 
-      renderBackupBanner();
+      renderBooks(books);
+
+            renderBackupBanner();
+    }
+
+    
+    function fmtWords(v){
+      const x = Number(v);
+      if(!isFinite(x)) return "0";
+      if(Math.abs(x - Math.round(x)) < 1e-9) return String(Math.round(x));
+      return String(Math.round(x*10)/10);
+    }
+
+    function renderBooks(books){
+      const tb = $("bookBody");
+      if(!tb) return;
+
+      const entries = Object.entries(books || {});
+      if(entries.length === 0){
+        tb.innerHTML = `<tr><td colspan="3" style="color:var(--muted);">还没有添加已读书籍。</td></tr>`;
+        return;
+      }
+
+      // Order: keep existing sort by title (stable + predictable)
+      entries.sort((a,b)=> a[0].localeCompare(b[0]));
+
+      tb.innerHTML = entries.map(([title, words]) => {
+        const key = encodeURIComponent(title);
+        return `
+          <tr>
+            <td>${escapeHtml(title)}</td>
+            <td>${escapeHtml(fmtWords(words))}</td>
+            <td>
+              <div class="actions">
+                <button class="mini btnSoft" data-book-act="edit" data-book="${key}">编辑</button>
+                <button class="mini btnDanger" data-book-act="del" data-book="${key}">删除</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      tb.querySelectorAll("[data-book-act]").forEach(btn=>{
+        btn.addEventListener("click", ()=>{
+          const act = btn.getAttribute("data-book-act");
+          const key = btn.getAttribute("data-book") || "";
+          const title = decodeURIComponent(key);
+          if(act === "edit"){
+            $("bookTitle").value = title;
+            $("bookWords").value = fmtWords((books||{})[title] ?? "");
+            $("bookTitle").focus();
+            toast("已载入到输入框，可直接修改后点“添加 / 更新这本”。");
+          }else if(act === "del"){
+            if(!confirm(`确认删除：${title}？`)) return;
+            const st = readStore();
+            st.books = st.books || {};
+            delete st.books[title];
+            writeStore(st);
+            render();
+            toast("已删除。");
+          }
+        });
+      });
     }
 
     function escapeHtml(s){
@@ -771,7 +852,9 @@
       URL.revokeObjectURL(a.href);
 
       localStorage.setItem(DAYS_BACKUP_KEY, String(Date.now()));
-      renderBackupBanner();
+      renderBooks(books);
+
+            renderBackupBanner();
       toast("已导出备份");
     });
     $("importBtn")?.addEventListener("click", ()=> $("importFile").click());
